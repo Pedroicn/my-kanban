@@ -1,0 +1,22 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Configurações globais para o projeto */
+body {
+  margin: 0;
+  padding: 1rem;
+  font-family: var(--p-font-family);
+  background-color: var(--p-surface-ground);
+}
+
+/* Reset de margens para títulos no PrimeNG */
+.p-toolbar h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Configurações para responsividade */
+@media (max-width: 768px) {
+  body {
+    padding: 0.5rem;
+  }
+}
