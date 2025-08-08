@@ -1,0 +1,155 @@
+<div class="boards-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <h1 class="title">
+        <i class="pi pi-calendar"></i>
+        Meus Boards
+      </h1>
+      <p class="subtitle">Gerencie seus projetos e tarefas</p>
+    </div>
+    <p-button 
+      icon="pi pi-plus" 
+      label="Novo Board" 
+      severity="success"
+      (click)="openCreateDialog()">
+    </p-button>
+  </div>
+
+  <!-- Boards Grid -->
+  <div class="boards-grid" *ngIf="boards.length > 0">
+    <div class="board-card" 
+         *ngFor="let board of boards" 
+         (click)="openBoard(board.id)">
+      <p-card [style]="{'border-left': '4px solid ' + board.color}">
+        <ng-template pTemplate="header">
+          <div class="board-header">
+            <div class="board-title">
+              <h3>{{ board.title }}</h3>
+              <p-button 
+                icon="pi pi-trash" 
+                severity="danger"
+                [text]="true"
+                size="small"
+                (click)="deleteBoard(board, $event)"
+                pTooltip="Excluir board">
+              </p-button>
+            </div>
+          </div>
+        </ng-template>
+        
+        <ng-template pTemplate="content">
+          <div class="board-content">
+            <p class="board-description">{{ board.description }}</p>
+            
+            <div class="board-stats">
+              <div class="stat-item">
+                <span class="stat-label">Tarefas</span>
+                <p-badge [value]="board.tasksCount" severity="info"></p-badge>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Concluídas</span>
+                <p-badge [value]="board.completedTasks" severity="success"></p-badge>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Progresso</span>
+                <p-tag [value]="getProgressPercentage(board) + '%'" 
+                       [severity]="getProgressPercentage(board) > 70 ? 'success' : getProgressPercentage(board) > 40 ? 'warning' : 'danger'">
+                </p-tag>
+              </div>
+            </div>
+
+            <div class="board-members" *ngIf="board.members.length > 0">
+              <span class="members-label">Membros:</span>
+              <div class="members-list">
+                <p-tag *ngFor="let member of board.members.slice(0, 3)" 
+                       [value]="member" 
+                       severity="secondary">
+                </p-tag>
+                <p-tag *ngIf="board.members.length > 3" 
+                       [value]="'+' + (board.members.length - 3)" 
+                       severity="info">
+                </p-tag>
+              </div>
+            </div>
+
+            <div class="board-dates">
+              <small>Modificado em: {{ board.lastModified | date:'dd/MM/yyyy' }}</small>
+            </div>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="boards.length === 0">
+    <div class="empty-content">
+      <i class="pi pi-calendar-plus empty-icon"></i>
+      <h2>Nenhum board encontrado</h2>
+      <p>Crie seu primeiro board para começar a organizar suas tarefas</p>
+      <p-button 
+        icon="pi pi-plus" 
+        label="Criar Primeiro Board" 
+        severity="success"
+        (click)="openCreateDialog()">
+      </p-button>
+    </div>
+  </div>
+
+  <!-- Create Board Dialog -->
+  <p-dialog 
+    header="Novo Board" 
+    [(visible)]="showCreateDialog" 
+    [modal]="true"
+    [style]="{width: '450px'}"
+    [closable]="true">
+    
+    <div class="create-form">
+      <div class="field">
+        <label for="title">Título *</label>
+        <input 
+          id="title"
+          type="text" 
+          pInputText 
+          [(ngModel)]="newBoard.title"
+          placeholder="Nome do board" 
+          class="w-full" />
+      </div>
+      
+      <div class="field">
+        <label for="description">Descrição</label>
+        <textarea 
+          id="description"
+          pTextarea 
+          [(ngModel)]="newBoard.description"
+          placeholder="Descrição do board (opcional)"
+          rows="3" 
+          class="w-full">
+        </textarea>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="dialog-footer">
+        <p-button 
+          label="Cancelar" 
+          icon="pi pi-times" 
+          severity="secondary"
+          [text]="true"
+          (click)="closeCreateDialog()">
+        </p-button>
+        <p-button 
+          label="Criar" 
+          icon="pi pi-check" 
+          severity="success"
+          [disabled]="!newBoard.title.trim()"
+          (click)="createBoard()">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Toast Messages -->
+  <p-toast></p-toast>
+</div>

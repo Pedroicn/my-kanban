@@ -17,6 +17,14 @@ Este é um projeto Angular 19 com PrimeNG já configurado e um exemplo básico d
 - ✅ Animações habilitadas
 - ✅ Roteamento configurado
 - ✅ Exemplo de Kanban Board com componentes PrimeNG
+- ✅ Módulos principais do PrimeNG incluídos
+- ✅ Angular CDK para drag & drop
+- ✅ Tooltips e badges funcionais
+- ✅ Avatares de usuários
+- ✅ Barras de progresso
+- ✅ Tags categorizadas
+- ✅ Sistema de notificações (Toast)
+- ✅ Diálogos de confirmação
 
 ## Comandos Disponíveis
 
@@ -48,9 +56,34 @@ src/
 
 ## Componentes PrimeNG Utilizados
 
-- `p-toolbar` - Barra de ferramentas
-- `p-card` - Cards para as tarefas e colunas
-- `p-button` - Botões de ação
+### Módulos Principais
+- `ButtonModule` - Botões de ação e navegação
+- `CardModule` - Cards para tarefas e colunas do Kanban
+- `ToolbarModule` - Barra de ferramentas superior
+- `DialogModule` - Modais e diálogos
+- `InputTextModule` - Campos de entrada de texto
+- `ToastModule` - Notificações toast
+- `TableModule` - Tabelas de dados
+- `TextareaModule` - Campos de texto multilinha
+- `SelectModule` - Campos de seleção/dropdown
+- `CheckboxModule` - Caixas de seleção
+- `TagModule` - Tags e etiquetas
+- `AvatarModule` - Avatares de usuários
+- `MenuModule` - Menus de navegação
+- `PopoverModule` - Popovers e overlays
+- `ConfirmDialogModule` - Diálogos de confirmação
+- `TooltipModule` - Tooltips informativos
+- `ProgressBarModule` - Barras de progresso
+- `ChipModule` - Chips e badges pequenos
+- `BadgeModule` - Badges de notificação
+- `SplitterModule` - Divisores de layout
+
+### Angular CDK
+- `DragDropModule` - Funcionalidade de arrastar e soltar
+
+### Serviços Incluídos
+- `MessageService` - Serviço para notificações toast
+- `ConfirmationService` - Serviço para diálogos de confirmação
 
 ## Como Usar
 

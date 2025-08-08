@@ -1,0 +1,134 @@
+<div class="board-detail-container">
+  <!-- Header Toolbar -->
+  <p-toolbar styleClass="board-toolbar">
+    <div class="flex align-items-center gap-2">
+      <p-button 
+        icon="pi pi-arrow-left" 
+        severity="secondary"
+        [text]="true"
+        (click)="goBack()"
+        pTooltip="Voltar aos boards">
+      </p-button>
+      <i class="pi pi-calendar text-2xl text-primary"></i>
+      <h1 class="m-0">{{ boardTitle }}</h1>
+    </div>
+    
+    <div class="flex gap-2">
+      <p-button 
+        icon="pi pi-plus" 
+        label="Nova Tarefa" 
+        severity="success"
+        pTooltip="Adicionar nova tarefa">
+      </p-button>
+      <p-button 
+        icon="pi pi-cog" 
+        severity="secondary"
+        [text]="true"
+        pTooltip="Configurações do board">
+      </p-button>
+    </div>
+  </p-toolbar>
+
+  <!-- Kanban Board -->
+  <div class="kanban-board">
+    <div class="kanban-columns">
+      <div class="kanban-column" *ngFor="let column of columns">
+        <div class="column-header" [style.border-left-color]="column.color">
+          <h3 class="column-title">{{ column.title }}</h3>
+          <p-badge [value]="column.tasks.length" severity="info"></p-badge>
+        </div>
+
+        <div 
+          class="column-content"
+          cdkDropList
+          [cdkDropListData]="column.tasks"
+          (cdkDropListDropped)="drop($event)">
+          
+          <div 
+            class="task-card"
+            *ngFor="let task of column.tasks"
+            cdkDrag>
+            
+            <p-card>
+              <ng-template pTemplate="header">
+                <div class="task-header">
+                  <h4 class="task-title">{{ task.title }}</h4>
+                  <div class="task-actions">
+                    <p-button 
+                      icon="pi pi-pencil" 
+                      severity="info"
+                      [text]="true"
+                      size="small"
+                      pTooltip="Editar tarefa">
+                    </p-button>
+                    <p-button 
+                      icon="pi pi-trash" 
+                      severity="danger"
+                      [text]="true"
+                      size="small"
+                      pTooltip="Excluir tarefa">
+                    </p-button>
+                  </div>
+                </div>
+              </ng-template>
+
+              <ng-template pTemplate="content">
+                <div class="task-content">
+                  <p class="task-description">{{ task.description }}</p>
+                  
+                  <!-- Tags -->
+                  <div class="task-tags" *ngIf="task.tags.length > 0">
+                    <p-tag 
+                      *ngFor="let tag of task.tags" 
+                      [value]="tag"
+                      severity="info">
+                    </p-tag>
+                  </div>
+
+                  <!-- Priority -->
+                  <div class="task-priority">
+                    <p-tag 
+                      [value]="getPriorityLabel(task.priority)"
+                      [severity]="getPriorityColor(task.priority)">
+                    </p-tag>
+                  </div>
+
+                  <!-- Progress (only if > 0) -->
+                  <div class="task-progress" *ngIf="task.progress > 0">
+                    <span class="progress-label">Progresso</span>
+                    <p-progressBar [value]="task.progress"></p-progressBar>
+                  </div>
+
+                  <!-- Due Date -->
+                  <div class="task-due-date" *ngIf="task.dueDate">
+                    <i class="pi pi-calendar"></i>
+                    <span>{{ task.dueDate | date:'dd/MM/yyyy' }}</span>
+                  </div>
+
+                  <!-- Assignee -->
+                  <div class="task-assignee">
+                    <p-avatar 
+                      [label]="getInitials(task.assignee)" 
+                      shape="circle"
+                      [pTooltip]="task.assignee">
+                    </p-avatar>
+                    <span class="assignee-name">{{ task.assignee }}</span>
+                  </div>
+                </div>
+              </ng-template>
+            </p-card>
+          </div>
+
+          <!-- Empty column message -->
+          <div class="empty-column" *ngIf="column.tasks.length === 0">
+            <i class="pi pi-inbox"></i>
+            <span>Nenhuma tarefa</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Messages -->
+  <p-toast></p-toast>
+</div>
