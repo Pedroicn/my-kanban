@@ -33,8 +33,8 @@
   <div class="kanban-board">
     <div class="kanban-columns">
       <div class="kanban-column" *ngFor="let column of columns">
-        <div class="column-header" [style.border-left-color]="column.color">
-          <h3 class="column-title">{{ column.title }}</h3>
+        <div class="column-header">
+          <h3 class="column-title">{{ column.name }}</h3>
           <p-badge [value]="column.tasks.length" severity="info"></p-badge>
         </div>
 
@@ -68,7 +68,7 @@
                   <p class="task-description">{{ task.description }}</p>
                   
                   <!-- Tags -->
-                  <div class="task-tags" *ngIf="task.tags.length > 0">
+                  <div class="task-tags" *ngIf="task.tags && task.tags.length > 0">
                     <p-tag 
                       *ngFor="let tag of task.tags" 
                       [value]="tag"
@@ -85,9 +85,9 @@
                   </div>
 
                   <!-- Progress (only if > 0) -->
-                  <div class="task-progress" *ngIf="task.progress > 0">
+                  <div class="task-progress" *ngIf="getProgress(task) > 0">
                     <span class="progress-label">Progresso</span>
-                    <p-progressBar [value]="task.progress"></p-progressBar>
+                    <p-progressBar [value]="getProgress(task)"></p-progressBar>
                   </div>
 
                   <!-- Due Date -->
@@ -97,13 +97,13 @@
                   </div>
 
                   <!-- Assignee -->
-                  <div class="task-assignee">
+                  <div class="task-assignee" *ngIf="task.assignedTo && task.assignedTo.length > 0">
                     <p-avatar 
-                      [label]="getInitials(task.assignee)" 
+                      [label]="getInitials(task.assignedTo)" 
                       shape="circle"
-                      [pTooltip]="task.assignee">
+                      [pTooltip]="getAssigneeName(task.assignedTo)">
                     </p-avatar>
-                    <span class="assignee-name">{{ task.assignee }}</span>
+                    <span class="assignee-name">{{ getAssigneeName(task.assignedTo) }}</span>
                   </div>
                 </div>
               </ng-template>

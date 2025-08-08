@@ -17,23 +17,12 @@ import { TooltipModule } from 'primeng/tooltip';
 // Services
 import { MessageService } from 'primeng/api';
 
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  assignee: string;
-  tags: string[];
-  priority: 'low' | 'medium' | 'high';
-  progress: number;
-  createdDate: Date;
-  dueDate?: Date;
-}
+// Models
+import { Task, Column, Board } from '../../models';
 
-interface Column {
-  id: string;
-  title: string;
-  tasks: Task[];
-  color: string;
+// Interface para UI da Task (estendendo o modelo base)
+interface TaskUI extends Task {
+  tags?: string[];
 }
 
 @Component({
@@ -58,7 +47,7 @@ interface Column {
 export class BoardDetailComponent implements OnInit {
   boardId: string | null = null;
   boardTitle = 'Board Kanban';
-  columns: Column[] = [];
+  columns: { id: string; name: string; tasks: TaskUI[] }[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -78,82 +67,86 @@ export class BoardDetailComponent implements OnInit {
     this.columns = [
       {
         id: 'todo',
-        title: 'A Fazer',
-        color: '#6366F1',
+        name: 'A Fazer',
         tasks: [
           {
-            id: 1,
+            id: '1',
             title: 'Criar wireframes',
             description: 'Desenvolver wireframes para as principais telas',
-            assignee: 'João Silva',
-            tags: ['Design', 'UX'],
             priority: 'high',
-            progress: 0,
-            createdDate: new Date('2024-01-15'),
-            dueDate: new Date('2024-01-25')
-          },
+            assignedTo: ['user1'],
+            completed: false,
+            createdAt: new Date('2024-01-15'),
+            updatedAt: new Date('2024-01-15'),
+            dueDate: new Date('2024-01-25'),
+            checklist: [
+              { label: 'Definir layout principal', checked: true },
+              { label: 'Criar telas de login', checked: false }
+            ]
+          } as TaskUI,
           {
-            id: 2,
+            id: '2',
             title: 'Configurar ambiente',
             description: 'Configurar ambiente de desenvolvimento',
-            assignee: 'Maria Santos',
-            tags: ['DevOps'],
             priority: 'medium',
-            progress: 0,
-            createdDate: new Date('2024-01-16')
-          }
+            assignedTo: ['user2'],
+            completed: false,
+            createdAt: new Date('2024-01-16'),
+            updatedAt: new Date('2024-01-16'),
+            tags: ['DevOps']
+          } as TaskUI
         ]
       },
       {
         id: 'inprogress',
-        title: 'Em Progresso',
-        color: '#F59E0B',
+        name: 'Em Progresso',
         tasks: [
           {
-            id: 3,
+            id: '3',
             title: 'Implementar autenticação',
             description: 'Desenvolver sistema de login e registro',
-            assignee: 'Pedro Costa',
-            tags: ['Backend', 'Security'],
             priority: 'high',
-            progress: 65,
-            createdDate: new Date('2024-01-10'),
-            dueDate: new Date('2024-01-20')
-          }
+            assignedTo: ['user3'],
+            completed: false,
+            createdAt: new Date('2024-01-10'),
+            updatedAt: new Date('2024-01-20'),
+            dueDate: new Date('2024-01-20'),
+            tags: ['Backend', 'Security']
+          } as TaskUI
         ]
       },
       {
         id: 'review',
-        title: 'Em Revisão',
-        color: '#8B5CF6',
+        name: 'Em Revisão',
         tasks: [
           {
-            id: 4,
+            id: '4',
             title: 'Testes unitários',
             description: 'Escrever testes para componentes principais',
-            assignee: 'Ana Lima',
-            tags: ['Testing'],
             priority: 'medium',
-            progress: 90,
-            createdDate: new Date('2024-01-08')
-          }
+            assignedTo: ['user4'],
+            completed: false,
+            createdAt: new Date('2024-01-08'),
+            updatedAt: new Date('2024-01-18'),
+            tags: ['Testing']
+          } as TaskUI
         ]
       },
       {
         id: 'done',
-        title: 'Concluído',
-        color: '#10B981',
+        name: 'Concluído',
         tasks: [
           {
-            id: 5,
+            id: '5',
             title: 'Setup do projeto',
             description: 'Configuração inicial do projeto Angular',
-            assignee: 'Carlos Oliveira',
-            tags: ['Setup'],
             priority: 'low',
-            progress: 100,
-            createdDate: new Date('2024-01-05')
-          }
+            assignedTo: ['user5'],
+            completed: true,
+            createdAt: new Date('2024-01-05'),
+            updatedAt: new Date('2024-01-05'),
+            tags: ['Setup']
+          } as TaskUI
         ]
       }
     ];
@@ -164,7 +157,7 @@ export class BoardDetailComponent implements OnInit {
   }
 
   // Método simplificado sem drag and drop (será implementado depois)
-  moveTask(taskId: number, fromColumn: string, toColumn: string) {
+  moveTask(taskId: string, fromColumn: string, toColumn: string) {
     // Lógica para mover tarefa entre colunas
     this.messageService.add({
       severity: 'success',
@@ -173,7 +166,7 @@ export class BoardDetailComponent implements OnInit {
     });
   }
 
-  getPriorityColor(priority: string): string {
+  getPriorityColor(priority?: string): string {
     switch (priority) {
       case 'high': return 'danger';
       case 'medium': return 'warning';
@@ -182,7 +175,7 @@ export class BoardDetailComponent implements OnInit {
     }
   }
 
-  getPriorityLabel(priority: string): string {
+  getPriorityLabel(priority?: string): string {
     switch (priority) {
       case 'high': return 'Alta';
       case 'medium': return 'Média';
@@ -191,7 +184,30 @@ export class BoardDetailComponent implements OnInit {
     }
   }
 
-  getInitials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  getInitials(userIds: string[] | undefined): string {
+    // Por enquanto, retorna as iniciais do primeiro usuário
+    // Em um projeto real, isso seria resolvido com um serviço de usuários
+    if (userIds && userIds.length > 0) {
+      return userIds[0].substring(0, 2).toUpperCase();
+    }
+    return 'NA';
+  }
+
+  getAssigneeName(userIds: string[] | undefined): string {
+    // Por enquanto, retorna o ID do primeiro usuário
+    // Em um projeto real, isso seria resolvido com um serviço de usuários
+    if (userIds && userIds.length > 0) {
+      return `Usuário ${userIds[0]}`;
+    }
+    return 'Não atribuído';
+  }
+
+  getProgress(task: TaskUI): number {
+    if (!task.checklist || task.checklist.length === 0) {
+      return task.completed ? 100 : 0;
+    }
+    
+    const completedItems = task.checklist.filter(item => item.checked).length;
+    return Math.round((completedItems / task.checklist.length) * 100);
   }
 }

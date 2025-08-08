@@ -18,16 +18,17 @@ import { BadgeModule } from 'primeng/badge';
 // Services
 import { MessageService } from 'primeng/api';
 
-interface Board {
-  id: number;
-  title: string;
-  description: string;
+// Models
+import { Board } from '../../models';
+
+// Interface para UI do Board (estendendo o modelo base)
+interface BoardUI extends Omit<Board, 'columns'> {
+  description?: string;
   color: string;
   tasksCount: number;
   completedTasks: number;
   createdDate: Date;
   lastModified: Date;
-  members: string[];
 }
 
 @Component({
@@ -51,7 +52,7 @@ interface Board {
   styleUrl: './boards.component.scss'
 })
 export class BoardsComponent implements OnInit {
-  boards: Board[] = [];
+  boards: BoardUI[] = [];
   showCreateDialog = false;
   newBoard = { title: '', description: '' };
 
@@ -68,42 +69,42 @@ export class BoardsComponent implements OnInit {
     // Mock data - em um projeto real, isso viria de um serviço
     this.boards = [
       {
-        id: 1,
-        title: 'Projeto Website',
+        id: '1',
+        name: 'Projeto Website',
         description: 'Desenvolvimento do novo website da empresa',
         color: '#3B82F6',
         tasksCount: 12,
         completedTasks: 8,
         createdDate: new Date('2024-01-15'),
         lastModified: new Date('2024-01-20'),
-        members: ['João Silva', 'Maria Santos', 'Pedro Costa']
+        members: ['user1', 'user2', 'user3']
       },
       {
-        id: 2,
-        title: 'App Mobile',
+        id: '2',
+        name: 'App Mobile',
         description: 'Aplicativo mobile para gestão de tarefas',
         color: '#10B981',
         tasksCount: 8,
         completedTasks: 3,
         createdDate: new Date('2024-01-10'),
         lastModified: new Date('2024-01-18'),
-        members: ['Ana Lima', 'Carlos Oliveira']
+        members: ['user4', 'user5']
       },
       {
-        id: 3,
-        title: 'Sistema ERP',
+        id: '3',
+        name: 'Sistema ERP',
         description: 'Implementação do novo sistema ERP',
         color: '#F59E0B',
         tasksCount: 15,
         completedTasks: 12,
         createdDate: new Date('2024-01-05'),
         lastModified: new Date('2024-01-19'),
-        members: ['Roberto Alves', 'Fernanda Rocha', 'Lucas Mendes', 'Juliana Ferreira']
+        members: ['user6', 'user7', 'user8', 'user9']
       }
     ];
   }
 
-  openBoard(boardId: number) {
+  openBoard(boardId: string) {
     this.router.navigate(['/board', boardId]);
   }
 
@@ -118,9 +119,9 @@ export class BoardsComponent implements OnInit {
 
   createBoard() {
     if (this.newBoard.title.trim()) {
-      const newBoard: Board = {
-        id: this.boards.length + 1,
-        title: this.newBoard.title,
+      const newBoard: BoardUI = {
+        id: (this.boards.length + 1).toString(),
+        name: this.newBoard.title,
         description: this.newBoard.description,
         color: this.getRandomColor(),
         tasksCount: 0,
@@ -141,13 +142,13 @@ export class BoardsComponent implements OnInit {
     }
   }
 
-  deleteBoard(board: Board, event: Event) {
+  deleteBoard(board: BoardUI, event: Event) {
     event.stopPropagation();
     this.boards = this.boards.filter(b => b.id !== board.id);
     this.messageService.add({
       severity: 'info',
       summary: 'Board Removido',
-      detail: `Board "${board.title}" foi removido`
+      detail: `Board "${board.name}" foi removido`
     });
   }
 
@@ -156,7 +157,7 @@ export class BoardsComponent implements OnInit {
     return colors[Math.floor(Math.random() * colors.length)];
   }
 
-  getProgressPercentage(board: Board): number {
+  getProgressPercentage(board: BoardUI): number {
     return board.tasksCount > 0 ? Math.round((board.completedTasks / board.tasksCount) * 100) : 0;
   }
 }
