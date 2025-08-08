@@ -1,0 +1,133 @@
+<p-dialog 
+  [header]="dialogTitle" 
+  [(visible)]="visible" 
+  [modal]="true"
+  [style]="{width: '500px'}"
+  [closable]="true"
+  (onHide)="onCancel()">
+  
+  <div class="task-form">
+    <!-- Título -->
+    <div class="field">
+      <label for="task-title" class="required">Título</label>
+      <input 
+        id="task-title"
+        type="text" 
+        pInputText 
+        [(ngModel)]="task.title"
+        placeholder="Digite o título da tarefa" 
+        class="w-full"
+        [class.ng-invalid]="!task.title.trim()" />
+    </div>
+
+    <!-- Descrição -->
+    <div class="field">
+      <label for="task-description" class="required">Descrição</label>
+      <textarea 
+        id="task-description"
+        pTextarea 
+        [(ngModel)]="task.description"
+        placeholder="Descreva a tarefa..."
+        rows="3" 
+        class="w-full"
+        [class.ng-invalid]="!task.description.trim()">
+      </textarea>
+    </div>
+
+    <!-- Responsável -->
+    <div class="field">
+      <label for="task-assignee" class="required">Responsável</label>
+      <p-select
+        id="task-assignee"
+        [(ngModel)]="task.assignee"
+        [options]="assigneeOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione o responsável"
+        class="w-full"
+        [class.ng-invalid]="!task.assignee">
+      </p-select>
+    </div>
+
+    <!-- Prioridade -->
+    <div class="field">
+      <label for="task-priority">Prioridade</label>
+      <p-select
+        id="task-priority"
+        [(ngModel)]="task.priority"
+        [options]="priorityOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione a prioridade"
+        class="w-full">
+      </p-select>
+    </div>
+
+    <!-- Tags -->
+    <div class="field">
+      <label for="task-tags">Tags</label>
+      <input 
+        id="task-tags"
+        type="text" 
+        pInputText 
+        placeholder="Digite tags separadas por vírgula"
+        class="w-full"
+        (keyup.enter)="addTag($event)" />
+      
+      <div class="tags-display" *ngIf="task.tags.length > 0">
+        <span class="tag" *ngFor="let tag of task.tags; let i = index">
+          {{ tag }}
+          <i class="pi pi-times" (click)="removeTag(i)"></i>
+        </span>
+      </div>
+    </div>
+
+    <!-- Data de Vencimento -->
+    <div class="field">
+      <label for="task-due-date">Data de Vencimento</label>
+      <p-datepicker
+        id="task-due-date"
+        [(ngModel)]="task.dueDate"
+        placeholder="Selecione a data"
+        class="w-full"
+        [showIcon]="true">
+      </p-datepicker>
+    </div>
+
+    <!-- Progresso -->
+    <div class="field" *ngIf="isEdit">
+      <label for="task-progress">Progresso (%)</label>
+      <p-inputnumber
+        id="task-progress"
+        [(ngModel)]="task.progress"
+        [min]="0"
+        [max]="100"
+        suffix="%"
+        placeholder="0"
+        class="w-full">
+      </p-inputnumber>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <p-button 
+        label="Cancelar" 
+        icon="pi pi-times" 
+        severity="secondary"
+        [text]="true"
+        (click)="onCancel()">
+      </p-button>
+      <p-button 
+        [label]="submitButtonLabel" 
+        icon="pi pi-check" 
+        severity="success"
+        [disabled]="!isValidTask()"
+        (click)="onSave()">
+      </p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Toast Messages -->
+<p-toast></p-toast>
